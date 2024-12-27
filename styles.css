@@ -92,16 +92,31 @@ html, body {
     appearance: none;
 }
 
+/* Hide all possible video controls */
+#fullscreen-video::-webkit-media-controls-panel,
+#fullscreen-video::-webkit-media-controls-play-button,
+#fullscreen-video::-webkit-media-controls-start-playback-button,
 #fullscreen-video::-webkit-media-controls,
-#fullscreen-video::-webkit-media-controls-enclosure,
-#fullscreen-video::-webkit-media-controls-panel {
+#fullscreen-video::-webkit-media-controls-overlay-play-button,
+#fullscreen-video::-webkit-media-controls-enclosure {
     display: none !important;
-    -webkit-appearance: none;
-    appearance: none;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
 }
 
-#fullscreen-video::-webkit-media-controls-start-playback-button {
+#fullscreen-video::-webkit-media-controls-container {
     display: none !important;
-    -webkit-appearance: none;
-    appearance: none;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+#fullscreen-video::-webkit-media-controls-timeline,
+#fullscreen-video::-webkit-media-controls-current-time-display,
+#fullscreen-video::-webkit-media-controls-time-remaining-display,
+#fullscreen-video::-webkit-media-controls-mute-button,
+#fullscreen-video::-webkit-media-controls-toggle-closed-captions-button,
+#fullscreen-video::-webkit-media-controls-volume-slider {
+    display: none !important;
 } 
