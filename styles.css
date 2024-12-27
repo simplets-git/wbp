@@ -2,82 +2,42 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Courier New', monospace;
+    font-family: monospace;
 }
 
 body {
-    background-color: #000;
+    background: #000;
     color: #fff;
     height: 100vh;
-    overflow: hidden;
+    padding: 20px;
+}
+
+.welcome {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+    letter-spacing: 2px;
 }
 
 .terminal {
-    height: 100vh;
     padding: 20px;
-    background-color: #000;
-}
-
-.welcome-text {
-    text-align: center;
-    padding: 20px 0;
-    font-size: 1.2em;
-    letter-spacing: 2px;
-    color: #fff;
-    text-transform: uppercase;
-    border-bottom: 1px solid #fff;
-    margin-bottom: 20px;
-}
-
-.terminal-content {
-    height: calc(100% - 80px);
-    overflow-y: auto;
-}
-
-#output {
-    margin-bottom: 20px;
-    line-height: 1.4;
 }
 
 .input-line {
     display: flex;
-    align-items: center;
+    margin-top: 10px;
 }
 
 .prompt {
-    color: #fff;
     margin-right: 10px;
 }
 
-#command-input {
-    flex: 1;
-    background: transparent;
+#input {
+    background: none;
     border: none;
     color: #fff;
-    font-size: 1em;
+    font-family: monospace;
+    font-size: 16px;
+    width: 100%;
     outline: none;
-    caret-color: #fff;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #fff;
-}
-
-/* Blinking cursor effect */
-#command-input::after {
-    content: '▋';
-    animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
 } 
