@@ -92,13 +92,13 @@ jQuery(function($) {
             }
         }
     }, {
-        greetings: 'Type "help" to see available commands.',
+        greetings: false,
         prompt: '> ',
         height: '100%',
         width: '100%',
         completion: ['help', 'about', 'clear', 'echo', 'time', 'video', 'agent', 'exit'],
         onInit: function() {
-            // Initial setup is now handled by greetings
+            // No initial message
         },
         onCommandNotFound: function(command) {
             if (chatMode) {
