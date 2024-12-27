@@ -145,6 +145,7 @@ jQuery(function($) {
             this.set_prompt('chat> ');
             this.echo('Entering chat mode with AI agent...');
             this.echo('Type "exit" to leave chat mode');
+            this.echo('Tips: Keep messages under 50 characters for best results');
         },
         exit: function() {
             if (chatMode) {
@@ -166,34 +167,75 @@ jQuery(function($) {
         },
         onCommandNotFound: function(command) {
             if (chatMode) {
-                // Send message to Hugging Face API
+                // Input validation
+                if (command.trim().length === 0) {
+                    this.error('Please type a message');
+                    return;
+                }
+                if (command.length > 100) {
+                    this.error('Message too long. Please keep under 100 characters');
+                    return;
+                }
+
+                // Show loading state
                 this.pause();
+                const loadingMessage = this.echo('AI is thinking...');
+                
+                // Send message to Hugging Face API
                 fetch('https://api-inference.huggingface.co/models/EleutherAI/pythia-70m-deduped', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer YOUR_NEW_API_KEY_HERE'
+                        'Authorization': 'Bearer ' + config.huggingface_api_key
                     },
                     body: JSON.stringify({
                         inputs: command,
-                        parameters: {
-                            max_length: 50,
-                            temperature: 0.7,
-                            top_p: 0.9,
-                            return_full_text: false
-                        }
+                        parameters: config.ai_settings
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    // Ensure response is 50 characters or less
+                    // Remove loading message
+                    loadingMessage.remove();
+                    
+                    if (!data || !data[0] || !data[0].generated_text) {
+                        throw new Error('Invalid response from AI');
+                    }
+
+                    // Process and format response
                     let response = data[0].generated_text || '';
                     response = response.trim().substring(0, 50);
+                    
+                    // Check for empty response
+                    if (response.length === 0) {
+                        throw new Error('AI returned empty response');
+                    }
+
                     this.echo('AI: ' + response);
                 })
                 .catch(error => {
+                    // Remove loading message
+                    loadingMessage.remove();
+                    
                     console.error('AI Error:', error);
-                    this.error('Error connecting to AI service');
+                    
+                    // User-friendly error messages
+                    if (error.message.includes('HTTP error! status: 429')) {
+                        this.error('AI is busy. Please try again in a moment.');
+                    } else if (error.message.includes('HTTP error! status: 401')) {
+                        this.error('AI authentication failed. Please check API key.');
+                    } else if (error.message.includes('HTTP error! status: 503')) {
+                        this.error('AI service is temporarily unavailable.');
+                    } else if (error.message === 'Failed to fetch') {
+                        this.error('Network error. Please check your connection.');
+                    } else {
+                        this.error('Error connecting to AI service. Please try again.');
+                    }
                 })
                 .finally(() => {
                     this.resume();
@@ -213,4 +255,5 @@ jQuery(function($) {
             terminal.focus(true);
         }
     }, 100);
+}); 
 }); 
