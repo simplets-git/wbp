@@ -29,7 +29,7 @@ jQuery(function($) {
             const videoContainer = document.createElement('div');
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
-                <video id="fullscreen-video" playsinline webkit-playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen" autoplay>
+                <video id="fullscreen-video" playsinline webkit-playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
                     <source src="video.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -60,7 +60,11 @@ jQuery(function($) {
 
             video.oncanplay = () => {
                 console.log('Video can start playing');
-                video.play().catch(err => {
+                // Start playing with sound
+                video.play().then(() => {
+                    // Ensure volume is on
+                    video.volume = 1;
+                }).catch(err => {
                     console.error('Play error:', err);
                     this.error('Error starting video playback');
                     videoContainer.remove();
