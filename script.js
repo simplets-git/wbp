@@ -192,57 +192,34 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-small', {
+                fetch('https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + config.huggingface_api_key
+                        'Authorization': 'Bearer ' + config.huggingface_api_key,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inputs: command,
-                        parameters: {
-                            max_length: 50,
-                            temperature: 0.7,
-                            return_full_text: false
-                        }
+                        inputs: command
                     })
                 })
-                .then(response => {
+                .then(async response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        const errorText = await response.text();
+                        console.error('API Error:', errorText);
+                        throw new Error(`API error: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('AI Response:', data); // Debug log
-                    
-                    if (!data || data.length === 0) {
-                        this.error('Invalid response from AI');
-                        return;
+                    if (!Array.isArray(data) || !data[0]?.generated_text) {
+                        console.error('Unexpected API response format:', data);
+                        throw new Error('Invalid response format');
                     }
-
-                    let response = data[0].generated_text || '';
-                    if (response.length === 0) {
-                        this.error('AI returned empty response');
-                        return;
-                    }
-
-                    this.echo('AI: ' + response);
+                    this.echo('AI: ' + data[0].generated_text);
                 })
                 .catch(error => {
-                    console.error('AI Error:', error);
-                    
-                    if (error.message.includes('HTTP error! status: 429')) {
-                        this.error('AI is busy. Please try again in a moment.');
-                    } else if (error.message.includes('HTTP error! status: 401')) {
-                        this.error('AI authentication failed.');
-                    } else if (error.message.includes('HTTP error! status: 400')) {
-                        this.error('Invalid request. Please try a different message.');
-                    } else if (error.message.includes('HTTP error! status: 503')) {
-                        this.error('AI service is unavailable.');
-                    } else {
-                        this.error('Error connecting to AI. Please try again.');
-                    }
+                    console.error('AI chat error:', error);
+                    this.error('Sorry, there was an error: ' + error.message);
                 });
             } else {
                 this.error(`Command not found: '${command}'\nType 'help' to see available commands.`);
