@@ -157,13 +157,13 @@ jQuery(function($) {
             }
         }
     }, {
-        greetings: false,
+        greetings: 'Type "help" for available commands',
         prompt: '> ',
         height: '100%',
         width: '100%',
         completion: ['help', 'about', 'clear', 'echo', 'time', 'video', 'agent', 'exit'],
         onInit: function() {
-            // No initial message
+            this.focus();
         },
         onCommandNotFound: function(command) {
             if (chatMode) {
@@ -243,18 +243,8 @@ jQuery(function($) {
             } else {
                 this.error(`Command not found: '${command}'\nType 'help' to see available commands.`);
             }
-        },
-        clickTimeout: 0,
-        focusOnClick: true
-    });
-
-    // Keep terminal focused but allow touch events
-    const terminal = $('#terminal').terminal();
-    let focusInterval = setInterval(() => {
-        if (!document.querySelector('#video-container')) {
-            terminal.focus(true);
         }
-    }, 100);
+    });
 
     // Ensure terminal is focused when needed
     $(document).on('click', function(e) {
