@@ -30,7 +30,7 @@ jQuery(function($) {
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
                 <video id="fullscreen-video" controls>
-                    <source src="https://raw.githubusercontent.com/simplets-git/wbp/main/demo.m4v" type="video/mp4">
+                    <source src="video.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             `;
