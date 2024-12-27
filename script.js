@@ -30,7 +30,7 @@ jQuery(function($) {
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
                 <video id="fullscreen-video" controls>
-                    <source src="video.m4v" type="video/mp4">
+                    <source src="https://raw.githubusercontent.com/simplets-git/wbp/main/video.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -38,14 +38,27 @@ jQuery(function($) {
             
             const video = document.getElementById('fullscreen-video');
             
-            // Add error handling
+            // Add detailed error handling
             video.onerror = () => {
-                this.error('Error loading video: ' + video.error.message);
+                const errorDetails = video.error ? `Code: ${video.error.code}, Message: ${video.error.message}` : 'Unknown error';
+                this.error('Error loading video: ' + errorDetails);
                 videoContainer.remove();
                 this.enable();
             };
 
-            // Add loading handling
+            // Add loading handling with more feedback
+            video.onloadstart = () => {
+                this.echo('Video starting to load...');
+            };
+
+            video.onloadedmetadata = () => {
+                this.echo('Video metadata loaded...');
+            };
+
+            video.oncanplay = () => {
+                this.echo('Video can start playing...');
+            };
+
             video.onloadeddata = () => {
                 this.echo('Video loaded, starting playback...');
                 video.play().catch(err => {
