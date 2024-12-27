@@ -88,4 +88,20 @@ html, body {
     left: 0;
     margin: 0;
     padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+#fullscreen-video::-webkit-media-controls,
+#fullscreen-video::-webkit-media-controls-enclosure,
+#fullscreen-video::-webkit-media-controls-panel {
+    display: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+#fullscreen-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+    appearance: none;
 } 

@@ -29,7 +29,7 @@ jQuery(function($) {
             const videoContainer = document.createElement('div');
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
-                <video id="fullscreen-video" controls playsinline webkit-playsinline>
+                <video id="fullscreen-video" playsinline webkit-playsinline>
                     <source src="https://raw.githubusercontent.com/simplets-git/wbp/main/video.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
