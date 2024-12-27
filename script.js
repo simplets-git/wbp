@@ -192,7 +192,7 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/EleutherAI/pythia-70m-deduped', {
+                fetch('https://api-inference.huggingface.co/models/facebook/opt-125m', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
