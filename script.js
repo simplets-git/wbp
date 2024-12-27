@@ -192,21 +192,21 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+                fetch('https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-125m', {
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + config.huggingface_api_key,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inputs: command,
+                        inputs: "Human: " + command + "\nAssistant: Let me help you with that:",
                         parameters: {
-                            max_new_tokens: 40,        // Balanced length
-                            temperature: 0.8,          // More creative
-                            top_k: 40,                // More varied
-                            top_p: 0.9,               // More natural
+                            max_new_tokens: 40,
+                            temperature: 0.7,
+                            top_k: 50,
+                            top_p: 0.95,
                             do_sample: true,
-                            num_return_sequences: 1
+                            return_full_text: false
                         }
                     })
                 })
