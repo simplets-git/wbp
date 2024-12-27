@@ -24,22 +24,42 @@ jQuery(function($) {
             this.echo(args.join(' '));
         },
         video: function() {
+            this.echo('Loading video...');
+            
             const videoContainer = document.createElement('div');
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
-                <video id="fullscreen-video" src="demo.m4v" style="width:100%;height:100%;object-fit:cover;">
+                <video id="fullscreen-video" controls>
+                    <source src="https://raw.githubusercontent.com/simplets-git/wbp/main/demo.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             `;
             document.body.appendChild(videoContainer);
             
             const video = document.getElementById('fullscreen-video');
-            video.play();
+            
+            // Add error handling
+            video.onerror = () => {
+                this.error('Error loading video: ' + video.error.message);
+                videoContainer.remove();
+                this.enable();
+            };
+
+            // Add loading handling
+            video.onloadeddata = () => {
+                this.echo('Video loaded, starting playback...');
+                video.play().catch(err => {
+                    this.error('Error playing video: ' + err.message);
+                    videoContainer.remove();
+                    this.enable();
+                });
+            };
 
             // Handle video end
             video.addEventListener('ended', () => {
                 videoContainer.remove();
                 this.enable();
+                this.echo('Video playback completed.');
             });
 
             // Handle ESC key
@@ -47,6 +67,7 @@ jQuery(function($) {
                 if (e.key === 'Escape') {
                     videoContainer.remove();
                     this.enable();
+                    this.echo('Video playback stopped.');
                     document.removeEventListener('keydown', handleEsc);
                 }
             };
