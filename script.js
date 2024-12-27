@@ -29,8 +29,8 @@ jQuery(function($) {
             const videoContainer = document.createElement('div');
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
-                <video id="fullscreen-video" playsinline webkit-playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen" autoplay muted>
-                    <source src="https://raw.githubusercontent.com/simplets-git/wbp/main/video.m4v" type="video/mp4">
+                <video id="fullscreen-video" playsinline webkit-playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen" autoplay>
+                    <source src="video.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -39,30 +39,30 @@ jQuery(function($) {
             const video = document.getElementById('fullscreen-video');
             
             // Add detailed error handling
-            video.onerror = () => {
+            video.onerror = (e) => {
                 const errorDetails = video.error ? `Code: ${video.error.code}, Message: ${video.error.message}` : 'Unknown error';
-                this.error('Error loading video: ' + errorDetails);
+                console.error('Video error:', errorDetails);
+                this.error('Error loading video. Please try again.');
                 videoContainer.remove();
                 this.enable();
             };
 
             // Add loading handling with more feedback
             video.onloadstart = () => {
+                console.log('Video loading started');
                 this.echo('Video starting to load...');
             };
 
             video.onloadedmetadata = () => {
+                console.log('Video metadata loaded');
                 this.echo('Video metadata loaded...');
             };
 
             video.oncanplay = () => {
-                this.echo('Video can start playing...');
-            };
-
-            video.onloadeddata = () => {
-                this.echo('Video loaded, starting playback...');
+                console.log('Video can start playing');
                 video.play().catch(err => {
-                    this.error('Error playing video: ' + err.message);
+                    console.error('Play error:', err);
+                    this.error('Error starting video playback');
                     videoContainer.remove();
                     this.enable();
                 });
@@ -70,6 +70,7 @@ jQuery(function($) {
 
             // Handle video end
             video.addEventListener('ended', () => {
+                console.log('Video ended');
                 videoContainer.remove();
                 this.enable();
                 this.echo('Video playback completed.');
@@ -78,6 +79,7 @@ jQuery(function($) {
             // Handle ESC key
             const handleEsc = (e) => {
                 if (e.key === 'Escape') {
+                    console.log('Video stopped by user');
                     videoContainer.remove();
                     this.enable();
                     this.echo('Video playback stopped.');
