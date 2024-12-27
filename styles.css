@@ -15,16 +15,20 @@ body {
 #welcome {
     color: #fff;
     text-align: center;
-    padding: 20px;
+    padding: 20px 0;
     font-family: monospace;
     font-size: 1.2em;
     letter-spacing: 3px;
     text-transform: uppercase;
+    border-bottom: 1px solid #fff;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 #terminal {
     flex: 1;
     height: calc(100vh - 70px);
+    padding: 0 20px;
 }
 
 /* Terminal customization */
@@ -35,12 +39,19 @@ body {
     --font: monospace;
 }
 
-.terminal .terminal-output div span {
+.terminal .terminal-output div span,
+.cmd span {
     color: #fff !important;
 }
 
-.cmd-cursor {
+.cmd {
+    background: #000 !important;
+    border: none !important;
+}
+
+.terminal .cmd .cursor.blink {
     background: #fff;
+    animation: blink 1s infinite;
 }
 
 /* Video container */
@@ -55,4 +66,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
 } 
