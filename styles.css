@@ -2,42 +2,43 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: monospace;
 }
 
 body {
     background: #000;
-    color: #fff;
     height: 100vh;
-    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-.welcome {
+#welcome {
+    color: #fff;
     text-align: center;
     padding: 20px;
-    font-size: 16px;
-    letter-spacing: 2px;
-}
-
-.terminal {
-    padding: 20px;
-}
-
-.input-line {
-    display: flex;
-    margin-top: 10px;
-}
-
-.prompt {
-    margin-right: 10px;
-}
-
-#input {
-    background: none;
-    border: none;
-    color: #fff;
     font-family: monospace;
-    font-size: 16px;
-    width: 100%;
-    outline: none;
+    font-size: 1.2em;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+#terminal {
+    flex: 1;
+    height: calc(100vh - 70px);
+}
+
+/* Terminal customization */
+.terminal {
+    --color: #fff;
+    --background: #000;
+    --size: 1.2;
+    --font: monospace;
+}
+
+.terminal .terminal-output div span {
+    color: #fff !important;
+}
+
+.cmd-cursor {
+    background: #fff;
 } 
