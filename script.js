@@ -191,9 +191,7 @@ jQuery(function($) {
                 }
 
                 // Show loading state
-                this.pause();
-                const loadingMessage = this.echo('AI is thinking...');
-                const terminal = this;  // Store terminal reference
+                this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
                 fetch('https://api-inference.huggingface.co/models/' + config.model, {
@@ -214,61 +212,33 @@ jQuery(function($) {
                     return response.json();
                 })
                 .then(data => {
-                    try {
-                        // Remove loading message
-                        loadingMessage.remove();
-                        
-                        if (!data || !Array.isArray(data) || data.length === 0) {
-                            throw new Error('Invalid response from AI');
-                        }
-
-                        // Process and format response
-                        let response = data[0].generated_text || '';
-                        response = response.trim().substring(0, 50);
-                        
-                        // Check for empty response
-                        if (response.length === 0) {
-                            throw new Error('AI returned empty response');
-                        }
-
-                        terminal.echo('AI: ' + response);
-                    } catch (err) {
-                        terminal.error('Error processing AI response: ' + err.message);
+                    if (!data || !Array.isArray(data) || data.length === 0) {
+                        this.error('Invalid response from AI');
+                        return;
                     }
+
+                    let response = data[0].generated_text || '';
+                    response = response.trim().substring(0, 50);
+                    
+                    if (response.length === 0) {
+                        this.error('AI returned empty response');
+                        return;
+                    }
+
+                    this.echo('AI: ' + response);
                 })
                 .catch(error => {
-                    try {
-                        // Remove loading message
-                        loadingMessage.remove();
-                        
-                        console.error('AI Error:', error);
-                        
-                        // User-friendly error messages
-                        if (error.message.includes('HTTP error! status: 429')) {
-                            terminal.error('AI is busy. Please try again in a moment.');
-                        } else if (error.message.includes('HTTP error! status: 401')) {
-                            terminal.error('AI authentication failed. Please check API key.');
-                        } else if (error.message.includes('HTTP error! status: 400')) {
-                            terminal.error('Invalid request to AI service. Please try a different message.');
-                        } else if (error.message.includes('HTTP error! status: 503')) {
-                            terminal.error('AI service is temporarily unavailable.');
-                        } else if (error.message === 'Failed to fetch') {
-                            terminal.error('Network error. Please check your connection.');
-                        } else {
-                            terminal.error('Error connecting to AI service. Please try again.');
-                        }
-                    } catch (err) {
-                        console.error('Error handling AI error:', err);
-                        terminal.error('An unexpected error occurred');
-                    }
-                })
-                .finally(() => {
-                    try {
-                        terminal.resume();
-                        terminal.refresh();  // Refresh the terminal display
-                        terminal.scroll_to_bottom();  // Ensure we see the latest output
-                    } catch (err) {
-                        console.error('Error in finally block:', err);
+                    console.error('AI Error:', error);
+                    if (error.message.includes('HTTP error! status: 429')) {
+                        this.error('AI is busy. Please try again in a moment.');
+                    } else if (error.message.includes('HTTP error! status: 401')) {
+                        this.error('AI authentication failed.');
+                    } else if (error.message.includes('HTTP error! status: 400')) {
+                        this.error('Invalid request. Please try a different message.');
+                    } else if (error.message.includes('HTTP error! status: 503')) {
+                        this.error('AI service is unavailable.');
+                    } else {
+                        this.error('Error connecting to AI. Please try again.');
                     }
                 });
             } else {
