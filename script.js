@@ -199,13 +199,14 @@ jQuery(function($) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inputs: command,
+                        inputs: command + "\nAssistant:",
                         parameters: {
-                            max_length: 100,
-                            temperature: 0.8,
+                            max_new_tokens: 50,
+                            temperature: 0.7,
+                            top_k: 50,
                             top_p: 0.9,
-                            return_full_text: false,
-                            do_sample: true
+                            do_sample: true,
+                            num_return_sequences: 1
                         }
                     })
                 })
@@ -218,11 +219,24 @@ jQuery(function($) {
                     return response.json();
                 })
                 .then(data => {
-                    if (!Array.isArray(data) || !data[0]?.generated_text) {
-                        console.error('Unexpected API response format:', data);
+                    console.log('Raw API response:', data); // Debug log
+                    
+                    if (!Array.isArray(data)) {
+                        console.error('Unexpected response format:', data);
                         throw new Error('Invalid response format');
                     }
-                    this.echo('AI: ' + data[0].generated_text);
+
+                    let response = data[0]?.generated_text || '';
+                    
+                    // Clean up the response
+                    response = response.replace(command, '').trim();
+                    response = response.replace('Assistant:', '').trim();
+                    
+                    if (response.length === 0) {
+                        throw new Error('Empty response from AI');
+                    }
+
+                    this.echo('AI: ' + response);
                 })
                 .catch(error => {
                     console.error('AI chat error:', error);
