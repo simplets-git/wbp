@@ -3,7 +3,7 @@ jQuery(function($) {
 
     // AI Configuration
     const config = {
-        huggingface_api_key: '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',
+        huggingface_api_key: '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',
         ai_settings: {
             max_length: 50,        // Maximum response length
             temperature: 0.7,      // Creativity (0.0 - 1.0)
