@@ -166,24 +166,33 @@ jQuery(function($) {
         },
         onCommandNotFound: function(command) {
             if (chatMode) {
-                // Send message to AI API
+                // Send message to Hugging Face API
                 this.pause();
-                fetch('https://api.community-ai.com/v1/chat/completions', {
+                fetch('https://api-inference.huggingface.co/models/EleutherAI/pythia-70m-deduped', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer YOUR_API_KEY'
+                        'Authorization': 'Bearer YOUR_NEW_API_KEY_HERE'
                     },
                     body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [{ role: 'user', content: command }]
+                        inputs: command,
+                        parameters: {
+                            max_length: 50,
+                            temperature: 0.7,
+                            top_p: 0.9,
+                            return_full_text: false
+                        }
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    this.echo('AI: ' + data.choices[0].message.content);
+                    // Ensure response is 50 characters or less
+                    let response = data[0].generated_text || '';
+                    response = response.trim().substring(0, 50);
+                    this.echo('AI: ' + response);
                 })
                 .catch(error => {
+                    console.error('AI Error:', error);
                     this.error('Error connecting to AI service');
                 })
                 .finally(() => {
