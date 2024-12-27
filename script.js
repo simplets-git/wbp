@@ -192,7 +192,7 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/google/flan-t5-small', {
+                fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-small', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
