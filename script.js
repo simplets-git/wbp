@@ -200,8 +200,14 @@ jQuery(function($) {
                         'Authorization': 'Bearer ' + config.huggingface_api_key
                     },
                     body: JSON.stringify({
-                        inputs: command,
-                        parameters: config.ai_settings
+                        inputs: "Human: " + command + "\nAssistant:",
+                        parameters: {
+                            max_new_tokens: 50,
+                            temperature: 0.7,
+                            top_p: 0.9,
+                            return_full_text: false,
+                            do_sample: true
+                        }
                     })
                 })
                 .then(response => {
@@ -214,7 +220,7 @@ jQuery(function($) {
                     // Remove loading message
                     loadingMessage.remove();
                     
-                    if (!data || !data[0] || !data[0].generated_text) {
+                    if (!data || !Array.isArray(data) || data.length === 0) {
                         throw new Error('Invalid response from AI');
                     }
 
@@ -228,6 +234,7 @@ jQuery(function($) {
                     }
 
                     this.echo('AI: ' + response);
+                    this.focus(); // Keep focus after response
                 })
                 .catch(error => {
                     // Remove loading message
@@ -240,6 +247,8 @@ jQuery(function($) {
                         this.error('AI is busy. Please try again in a moment.');
                     } else if (error.message.includes('HTTP error! status: 401')) {
                         this.error('AI authentication failed. Please check API key.');
+                    } else if (error.message.includes('HTTP error! status: 400')) {
+                        this.error('Invalid request to AI service. Please try a different message.');
                     } else if (error.message.includes('HTTP error! status: 503')) {
                         this.error('AI service is temporarily unavailable.');
                     } else if (error.message === 'Failed to fetch') {
@@ -247,9 +256,11 @@ jQuery(function($) {
                     } else {
                         this.error('Error connecting to AI service. Please try again.');
                     }
+                    this.focus(); // Keep focus after error
                 })
                 .finally(() => {
                     this.resume();
+                    this.focus(); // Ensure focus is maintained
                 });
             } else {
                 this.error(`Command not found: '${command}'\nType 'help' to see available commands.`);
