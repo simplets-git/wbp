@@ -1,11 +1,7 @@
 jQuery(function($) {
     let chatMode = false;
 
-    // Prevent mobile keyboard from popping up automatically
-    document.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-    }, { passive: false });
-
+    // Configure terminal
     $('#terminal').terminal({
         help: function() {
             this.echo('Available commands:');
