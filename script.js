@@ -192,14 +192,21 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill', {
+                fetch('https://api-inference.huggingface.co/models/gpt2', {
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + config.huggingface_api_key,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inputs: command
+                        inputs: command,
+                        parameters: {
+                            max_length: 100,
+                            temperature: 0.8,
+                            top_p: 0.9,
+                            return_full_text: false,
+                            do_sample: true
+                        }
                     })
                 })
                 .then(async response => {
