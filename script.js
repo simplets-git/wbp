@@ -199,14 +199,15 @@ jQuery(function($) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inputs: command + "\nAssistant:",
+                        inputs: "Human: " + command + "\nAssistant: Keep it short and friendly:",
                         parameters: {
-                            max_new_tokens: 50,
-                            temperature: 0.7,
-                            top_k: 50,
-                            top_p: 0.9,
+                            max_new_tokens: 20,        // Much shorter responses
+                            temperature: 0.5,          // Less random
+                            top_k: 30,                // More focused
+                            top_p: 0.5,               // More focused
                             do_sample: true,
-                            num_return_sequences: 1
+                            num_return_sequences: 1,
+                            stop: ["\n", "Human:", "Assistant:"]  // Stop at new lines
                         }
                     })
                 })
