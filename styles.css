@@ -4,12 +4,17 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
     background: #000;
     height: 100vh;
     overflow: hidden;
+}
+
+.container {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    padding: 20px;
 }
 
 #welcome {
@@ -22,36 +27,38 @@ body {
     text-transform: uppercase;
     border-bottom: 1px solid #fff;
     margin-bottom: 20px;
-    width: 100%;
 }
 
 #terminal {
     flex: 1;
-    height: calc(100vh - 70px);
-    padding: 0 20px;
+    background: #000;
 }
 
-/* Terminal customization */
 .terminal {
-    --color: #fff;
-    --background: #000;
+    --color: #fff !important;
+    --background: #000 !important;
     --size: 1.2;
     --font: monospace;
 }
 
-.terminal .terminal-output div span,
-.cmd span {
+.terminal, .terminal .terminal-output > div > div, .cmd {
     color: #fff !important;
+    background: #000 !important;
+    font-family: monospace !important;
 }
 
 .cmd {
-    background: #000 !important;
     border: none !important;
+    padding: 0 !important;
 }
 
 .terminal .cmd .cursor.blink {
-    background: #fff;
-    animation: blink 1s infinite;
+    color: #fff !important;
+    background: #fff !important;
+}
+
+.terminal-output > div {
+    padding: 2px 0;
 }
 
 /* Video container */
@@ -66,8 +73,4 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
 } 
