@@ -3,14 +3,12 @@ jQuery(function($) {
 
     // AI Configuration
     const config = {
-        huggingface_api_key: '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',
-        model: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0',
+        huggingface_api_key: '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',
         ai_settings: {
-            max_new_tokens: 50,
-            temperature: 0.7,
-            top_p: 0.9,
-            return_full_text: false,
-            do_sample: true
+            max_length: 50,        // Maximum response length
+            temperature: 0.7,      // Creativity (0.0 - 1.0)
+            top_p: 0.9,           // Nucleus sampling
+            return_full_text: false
         }
     };
 
@@ -194,14 +192,14 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/' + config.model, {
+                fetch('https://api-inference.huggingface.co/models/EleutherAI/pythia-70m-deduped', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + config.huggingface_api_key
                     },
                     body: JSON.stringify({
-                        inputs: "<|user|>" + command + "<|assistant|>",
+                        inputs: command,
                         parameters: config.ai_settings
                     })
                 })
