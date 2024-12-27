@@ -1,6 +1,17 @@
 jQuery(function($) {
     let chatMode = false;
 
+    // AI Configuration
+    const config = {
+        huggingface_api_key: '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',
+        ai_settings: {
+            max_length: 50,        // Maximum response length
+            temperature: 0.7,      // Creativity (0.0 - 1.0)
+            top_p: 0.9,           // Nucleus sampling
+            return_full_text: false
+        }
+    };
+
     // Configure terminal with proper focus handling
     const term = $('#terminal').terminal({
         help: function() {
