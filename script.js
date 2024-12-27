@@ -192,7 +192,7 @@ jQuery(function($) {
                 this.echo('AI is thinking...');
                 
                 // Send message to Hugging Face API
-                fetch('https://api-inference.huggingface.co/models/facebook/opt-125m', {
+                fetch('https://api-inference.huggingface.co/models/google/flan-t5-small', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -200,7 +200,11 @@ jQuery(function($) {
                     },
                     body: JSON.stringify({
                         inputs: command,
-                        parameters: config.ai_settings
+                        parameters: {
+                            max_length: 50,
+                            temperature: 0.7,
+                            return_full_text: false
+                        }
                     })
                 })
                 .then(response => {
@@ -210,14 +214,14 @@ jQuery(function($) {
                     return response.json();
                 })
                 .then(data => {
-                    if (!data || !Array.isArray(data) || data.length === 0) {
+                    console.log('AI Response:', data); // Debug log
+                    
+                    if (!data || data.length === 0) {
                         this.error('Invalid response from AI');
                         return;
                     }
 
                     let response = data[0].generated_text || '';
-                    response = response.trim().substring(0, 50);
-                    
                     if (response.length === 0) {
                         this.error('AI returned empty response');
                         return;
