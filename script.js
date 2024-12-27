@@ -191,7 +191,11 @@ jQuery(function($) {
                 }
 
                 // Show loading state
-                this.echo('AI is thinking...');
+                this.echo('Sending message to AI...');
+                
+                // Show response area
+                $('#ai-response-area').addClass('visible');
+                $('#ai-response').text('AI is thinking...');
                 
                 // Send message to Hugging Face API
                 fetch('https://api-inference.huggingface.co/models/' + config.model, {
@@ -213,7 +217,7 @@ jQuery(function($) {
                 })
                 .then(data => {
                     if (!data || !Array.isArray(data) || data.length === 0) {
-                        this.error('Invalid response from AI');
+                        $('#ai-response').text('Invalid response from AI');
                         return;
                     }
 
@@ -221,25 +225,27 @@ jQuery(function($) {
                     response = response.trim().substring(0, 50);
                     
                     if (response.length === 0) {
-                        this.error('AI returned empty response');
+                        $('#ai-response').text('AI returned empty response');
                         return;
                     }
 
-                    this.echo('AI: ' + response);
+                    $('#ai-response').text(response);
                 })
                 .catch(error => {
                     console.error('AI Error:', error);
+                    let errorMessage = 'Error connecting to AI. Please try again.';
+                    
                     if (error.message.includes('HTTP error! status: 429')) {
-                        this.error('AI is busy. Please try again in a moment.');
+                        errorMessage = 'AI is busy. Please try again in a moment.';
                     } else if (error.message.includes('HTTP error! status: 401')) {
-                        this.error('AI authentication failed.');
+                        errorMessage = 'AI authentication failed.';
                     } else if (error.message.includes('HTTP error! status: 400')) {
-                        this.error('Invalid request. Please try a different message.');
+                        errorMessage = 'Invalid request. Please try a different message.';
                     } else if (error.message.includes('HTTP error! status: 503')) {
-                        this.error('AI service is unavailable.');
-                    } else {
-                        this.error('Error connecting to AI. Please try again.');
+                        errorMessage = 'AI service is unavailable.';
                     }
+                    
+                    $('#ai-response').text(errorMessage);
                 });
             } else {
                 this.error(`Command not found: '${command}'\nType 'help' to see available commands.`);
