@@ -1,6 +1,11 @@
 jQuery(function($) {
     let chatMode = false;
 
+    // Prevent mobile keyboard from popping up automatically
+    document.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
     $('#terminal').terminal({
         help: function() {
             this.echo('Available commands:');
@@ -29,7 +34,7 @@ jQuery(function($) {
             const videoContainer = document.createElement('div');
             videoContainer.id = 'video-container';
             videoContainer.innerHTML = `
-                <video id="fullscreen-video" playsinline webkit-playsinline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen">
+                <video id="fullscreen-video" playsinline webkit-playsinline x5-video-player-type="h5" x5-video-player-fullscreen="true">
                     <source src="video.m4v" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -38,6 +43,33 @@ jQuery(function($) {
             
             const video = document.getElementById('fullscreen-video');
             
+            // Lock screen orientation to landscape if possible
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape');
+                }
+            } catch (err) {
+                console.log('Orientation lock not supported');
+            }
+
+            // Handle touch events for video
+            let touchStartX = 0;
+            videoContainer.addEventListener('touchstart', function(e) {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+
+            videoContainer.addEventListener('touchend', function(e) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                
+                // Swipe right to exit video
+                if (Math.abs(diff) > 50 && diff < 0) {
+                    videoContainer.remove();
+                    this.enable();
+                    this.echo('Video playback stopped.');
+                }
+            }.bind(this), { passive: true });
+
             // Add detailed error handling
             video.onerror = (e) => {
                 const errorDetails = video.error ? `Code: ${video.error.code}, Message: ${video.error.message}` : 'Unknown error';
@@ -47,52 +79,69 @@ jQuery(function($) {
                 this.enable();
             };
 
-            // Add loading handling with more feedback
             video.onloadstart = () => {
                 console.log('Video loading started');
                 this.echo('Video starting to load...');
             };
 
-            video.onloadedmetadata = () => {
-                console.log('Video metadata loaded');
-                this.echo('Video metadata loaded...');
-            };
-
             video.oncanplay = () => {
                 console.log('Video can start playing');
+                // Request fullscreen on mobile
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                }
+                
                 // Start playing with sound
                 video.play().then(() => {
-                    // Ensure volume is on
                     video.volume = 1;
                 }).catch(err => {
                     console.error('Play error:', err);
-                    this.error('Error starting video playback');
-                    videoContainer.remove();
-                    this.enable();
+                    // On mobile, we might need user interaction
+                    this.echo('Tap to play video with sound');
+                    video.addEventListener('touchstart', function playHandler() {
+                        video.play();
+                        video.removeEventListener('touchstart', playHandler);
+                    });
                 });
             };
 
             // Handle video end
             video.addEventListener('ended', () => {
-                console.log('Video ended');
+                // Exit fullscreen if needed
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+                
                 videoContainer.remove();
                 this.enable();
                 this.echo('Video playback completed.');
             });
 
-            // Handle ESC key
-            const handleEsc = (e) => {
-                if (e.key === 'Escape') {
-                    console.log('Video stopped by user');
-                    videoContainer.remove();
-                    this.enable();
-                    this.echo('Video playback stopped.');
-                    document.removeEventListener('keydown', handleEsc);
+            // Handle ESC key and back button
+            const handleExit = () => {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
                 }
+                videoContainer.remove();
+                this.enable();
+                this.echo('Video playback stopped.');
             };
-            document.addEventListener('keydown', handleEsc);
 
-            // Disable terminal while video is playing
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    handleExit();
+                }
+            });
+
+            // Handle back button on mobile
+            window.addEventListener('popstate', handleExit);
+
             this.disable();
         },
         agent: function() {
@@ -152,9 +201,11 @@ jQuery(function($) {
         focusOnClick: true
     });
 
-    // Keep terminal focused
+    // Keep terminal focused but allow touch events
     const terminal = $('#terminal').terminal();
-    setInterval(() => {
-        terminal.focus(true);
+    let focusInterval = setInterval(() => {
+        if (!document.querySelector('#video-container')) {
+            terminal.focus(true);
+        }
     }, 100);
 }); 
