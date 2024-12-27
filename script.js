@@ -1,8 +1,8 @@
 jQuery(function($) {
     let chatMode = false;
 
-    // Configure terminal
-    $('#terminal').terminal({
+    // Configure terminal with proper focus handling
+    const term = $('#terminal').terminal({
         help: function() {
             this.echo('Available commands:');
             this.echo('help     - Show this help message');
@@ -255,5 +255,14 @@ jQuery(function($) {
             terminal.focus(true);
         }
     }, 100);
-}); 
+
+    // Ensure terminal is focused when needed
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#video-container').length) {
+            term.focus();
+        }
+    });
+
+    // Initial focus
+    term.focus();
 }); 
